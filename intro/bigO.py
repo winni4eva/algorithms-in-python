@@ -1,5 +1,6 @@
 #import modules
 from time import time
+from random import shuffle
 
 
 #1.
@@ -74,8 +75,112 @@ def bubbleSort(alist):
 # (131072, 474491.5862083435)
 # (262144, 1941134.1590881348)
 # (524288, 7969213.345050812)
+# With the linear search we didnt see much difference btn the time as the array size grew
+# With the bubble sort we see much greater difference
+# The bubble sort is very slow as the amount of data increases
+# O(N^2) is very bad and must be avoided
 
 
+
+
+#4.
+# O(log N) This occurs when data being used is decreased roughly by 50% each time we parse through using the algorithm
+# An example of log N behaviour is the binary array search
+# However we need to sort tthe items in our list first before we can do a binary array search
+# We would use the bubble sort algorithm here because we already have it but it would be much effecient to use
+# a selection sort or quick sort to improve performance
+
+def bs_contains(myList, searchItem):
+    # sortedList = bubbleSort(myList) We would need to sort but in our case our test data is already sorted
+    length = len(myList)
+    lowestPoint = 0
+    highestPoint = length - 1
+
+    while lowestPoint <= highestPoint:
+        midpoint = (lowestPoint + highestPoint)/2
+        if searchItem == myList[midpoint]:
+            return midpoint
+        elif searchItem < myList[midpoint]:
+            highestPoint = midpoint - 1
+        else:
+            lowestPoint = midpoint + 1
+    return -(lowestPoint + 1)
+
+# Array Size, Time To Search
+# (1024, 0.0059604644775390625)
+# (2048, 0.0069141387939453125)
+# (4096, 0.0059604644775390625)
+# (8192, 0.0059604644775390625)
+# (16384, 0.03600120544433594)
+# (32768, 0.018835067749023438)
+# (65536, 0.028133392333984375)
+# (131072, 0.03910064697265625)
+# (262144, 0.015020370483398438)
+# (524288, 0.017881393432617188)
+# (1048576, 0.012874603271484375)
+# (2097152, 0.013828277587890625)
+# (4194304, 0.014066696166992188)
+# (8388608, 0.03504753112792969)
+# (16777216, 0.01811981201171875)
+# (33554432, 0.0171661376953125)
+# The increase in data had very little effect on the time it took to search through the array
+# All we had to do was take one extra step and we decreased the problem by half
+
+
+
+
+
+
+#5.
+# O(n log n) Most sorting algorithms we hav looked at so far have O(N), this is because to properly sort an array
+# we need to go through each element at least once to properly sort our items 
+# Algorithtms like tthe quick sort only compare values once unlike the bubblesort where values are compared over and over again
+# Each parse reduces the possible final sorted list in half
+# In other words O(log n!) => factorial of n on each parse
+# log n + log n-1 ... + log 1 
+# this is equal to n log n
+
+
+def quickSort(alist):
+   quickSortHelper(alist,0,len(alist)-1)
+
+def quickSortHelper(alist,first,last):
+   if first<last:
+
+       splitpoint = partition(alist,first,last)
+
+       quickSortHelper(alist,first,splitpoint-1)
+       quickSortHelper(alist,splitpoint+1,last)
+
+
+def partition(alist,first,last):
+   pivotvalue = alist[first]
+
+   leftmark = first+1
+   rightmark = last
+
+   done = False
+   while not done:
+
+       while leftmark <= rightmark and alist[leftmark] <= pivotvalue:
+           leftmark = leftmark + 1
+
+       while alist[rightmark] >= pivotvalue and rightmark >= leftmark:
+           rightmark = rightmark -1
+
+       if rightmark < leftmark:
+           done = True
+       else:
+           temp = alist[leftmark]
+           alist[leftmark] = alist[rightmark]
+           alist[rightmark] = temp
+
+   temp = alist[first]
+   alist[first] = alist[rightmark]
+   alist[rightmark] = temp
+
+
+   return rightmark
 
 
 
@@ -85,12 +190,16 @@ def performance():
     # Determine performance of contains algorithm
     n = 1024
     while n < 50000000:
-        sorted = range(n)
+        sorted = range(n) # sorted array
+        shuffle(sorted) # unsort array for quick sort
+        
         now = time()
 
         # Code whose performance is to be evaluated
         #contains(sorted, -1)
-        bubbleSort(sorted)
+        #bubbleSort(sorted)
+        #bs_contains(sorted, -1)
+        quickSort(sorted)
         
         done = time()
 
